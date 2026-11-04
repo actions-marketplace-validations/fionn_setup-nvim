@@ -15,27 +15,42 @@ runs:
   using: composite
   steps:
 
+    - name: Detect architecture
+      id: arch
+      shell: bash
+      run: |
+        if [[ "$RUNNER_ARCH" == "X64" ]]; then
+          echo "arch=x86_64" >> "$GITHUB_OUTPUT"
+        elif [[ "$RUNNER_ARCH" == "ARM64" ]]; then
+          echo "arch=arm64" >> "$GITHUB_OUTPUT"
+        else
+          echo "Unsupported architecture" >&2
+          exit 1
+        fi
+
     - name: Download Neovim
-      run: gh release download "$version" --repo neovim/neovim --pattern nvim-linux-x86_64.tar.gz
+      run: gh release download "$version" --repo neovim/neovim --pattern "nvim-linux-$arch.tar.gz"
       shell: bash
       env:
         version: ${{ inputs.version }}
+        arch: ${{ steps.arch.outputs.arch }}
 
     - name: Get release digest
       id: release
       run: |
-        digest=$(gh release view "$version" --repo neovim/neovim --json assets --jq ".[].[] | select(.name == \"nvim-linux-x86_64.tar.gz\") | .digest")
+        digest=$(gh release view "$version" --repo neovim/neovim --json assets --jq ".[].[] | select(.name == \"nvim-linux-$arch.tar.gz\") | .digest")
         echo "digest=$digest" >> $GITHUB_OUTPUT
       shell: bash
       env:
         version: ${{ inputs.version }}
+        arch: ${{ steps.arch.outputs.arch }}
         GH_TOKEN: ${{ github.token }}
 
     - name: Calculate local hash
       id: hash
       uses: fionn/action-hash@v0.0.2
       with:
-        path: nvim-linux-x86_64.tar.gz
+        path: nvim-linux-${{ steps.arch.outputs.arch }}.tar.gz
 
     - name: Compare hashes
       run: |
@@ -46,8 +61,10 @@ runs:
         local_hash: ${{ steps.hash.outputs.sha256 }}
 
     - name: Install Neovim
-      run: sudo tar --strip-components=1 -C /usr -xzf nvim-linux-x86_64.tar.gz
+      run: sudo tar --strip-components=1 -C /usr -xzf "nvim-linux-$arch.tar.gz"
       shell: bash
+      env:
+        arch: ${{ steps.arch.outputs.arch }}
 
     - name: Set VIMRUNTIME
       run: echo "VIMRUNTIME=/usr/share/nvim/runtime" >> $GITHUB_ENV

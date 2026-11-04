@@ -7,10 +7,36 @@ permissions:
 
 jobs:
 
-  test:
+  test-x86:
 
-    name: Test
-    runs-on: ubuntu-latest
+    name: Test on x86
+    runs-on: ubuntu-26.04
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Install Neovim
+        uses: $/
+        with:
+          version: v0.12.6
+
+      - name: Get nvim location
+        run: which nvim
+
+      - name: Get nvim version
+        run: nvim --version
+
+      - name: Get runtime directory
+        run: echo "$VIMRUNTIME"
+
+  test-arm:
+
+    name: Test on ARM
+    runs-on: ubuntu-26.04-arm
 
     steps:
 
