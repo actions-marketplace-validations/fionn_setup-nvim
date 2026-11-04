@@ -1,6 +1,6 @@
 # Setup Neovim
 
-This is a composite Github action to download and install Neovim.
+This is a composite GitHub action to download and install Neovim.
 
 This might be useful if you use the [Neovim Lua "standard library"](https://neovim.io/doc/user/lua/#lua-stdlib) and need `vim.*` symbols available in CI.
 
