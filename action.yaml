@@ -66,6 +66,12 @@ runs:
       env:
         arch: ${{ steps.arch.outputs.arch }}
 
+    - name: Remove tarball
+      run: rm "nvim-linux-$arch.tar.gz"
+      shell: bash
+      env:
+        arch: ${{ steps.arch.outputs.arch }}
+
     - name: Set VIMRUNTIME
       run: echo "VIMRUNTIME=/usr/share/nvim/runtime" >> $GITHUB_ENV
       shell: bash
