@@ -49,7 +49,7 @@ runs:
 
     - name: Calculate local hash
       id: hash
-      uses: fionn/action-hash@d4bf3725646f5bc4cd3879c1ecb94b1af59fd040 # v0.0.2
+      uses: fionn/action-hash@f0f38e970282aedee1cce089b7a932320cf7d1d9 # v0.0.3
       with:
         path: nvim-linux-${{ steps.arch.outputs.arch }}.tar.gz
 
